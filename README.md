@@ -1,6 +1,7 @@
 <!--
 @since 2023.12.23, 16:55
 @changed 2024.01.30, 19:29
+@changed 2025.10.29 - Removed gulp, replaced with Node.js script
 -->
 
 # svelte-randonneur-app
@@ -22,7 +23,7 @@ Deploy demo server (with recent build): https://svelte-randonneur-app.lilliputte
 
 This app is powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
 
-### Build
+### Installation
 
 Install all required node dependencies:
 
@@ -30,11 +31,17 @@ Install all required node dependencies:
 npm install
 ```
 
+This will automatically run post-install scripts to patch node packages as needed.
+
+### Development
+
 Start dev server (locate in browser with `http://localhost:3000`):
 
 ```
 npm run start
 ```
+
+### Build
 
 Make build:
 
@@ -42,12 +49,17 @@ Make build:
 npm run build
 ```
 
+The build process:
+1. Compiles the Svelte app using Vite (`npm run svelte-build`)
+2. Runs post-build tasks using a Node.js script (`npm run patch-build`)
+   - Writes build information to `build/build.txt`
+
 You can preview the production build with svelte's `npm run preview` or with smth like `npx serve build`.
 
 ### Publishing build
 
 For successful publishing the build application the environment should be
-propeply set up (see npm script command `postinstall-publish-submodule`).
+properly set up (see npm script command `postinstall-publish-submodule`).
 
 ```
 npm run build-and-publish
