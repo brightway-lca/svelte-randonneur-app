@@ -87,3 +87,92 @@ https://codeload.github.com/lilliputten/svelte-randonneur-app/zip/refs/heads/pub
 To download a specific version archive, use:
 
 https://codeload.github.com/lilliputten/svelte-randonneur-app/zip/refs/tags/publish.0.0.13
+
+## Container Deployment (Podman/Docker)
+
+The application can be run in a container using Podman or Docker.
+
+### Building the Container Image
+
+Build the image using Podman:
+
+```bash
+podman build -t svelte-randonneur-app:latest .
+```
+
+Or using Docker:
+
+```bash
+docker build -t svelte-randonneur-app:latest .
+```
+
+### Running the Container
+
+#### Using Podman
+
+Run the container directly:
+
+```bash
+podman run -d -p 8080:80 --name svelte-randonneur-app svelte-randonneur-app:latest
+```
+
+Or using Podman Compose:
+
+```bash
+podman-compose up -d
+```
+
+#### Using Docker
+
+Run the container directly:
+
+```bash
+docker run -d -p 8080:80 --name svelte-randonneur-app svelte-randonneur-app:latest
+```
+
+Or using Docker Compose:
+
+```bash
+docker-compose -f container-compose.yml up -d
+```
+
+### Accessing the Application
+
+Once the container is running, access the application at:
+
+```
+http://localhost:8080
+```
+
+### Managing the Container
+
+Stop the container:
+
+```bash
+podman stop svelte-randonneur-app
+# or
+podman-compose down
+```
+
+View logs:
+
+```bash
+podman logs svelte-randonneur-app
+# or
+podman-compose logs
+```
+
+Remove the container:
+
+```bash
+podman rm svelte-randonneur-app
+# or
+podman-compose down --rmi all
+```
+
+### Notes
+
+- The container uses a multi-stage build for optimized image size
+- The built application is served using nginx
+- Build info includes git commit hash and branch (requires `.git` directory during build)
+- Port 8080 on the host maps to port 80 in the container (configurable in `container-compose.yml`)

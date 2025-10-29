@@ -1,0 +1,70 @@
+# Dependencies
+node_modules
+npm-debug.log*
+
+# Build outputs
+build
+.svelte-kit
+dist
+.publish
+
+# Git (comment out .git if you need git info in build, but it increases image size)
+# .git
+.gitignore
+.gitmodules
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Test and coverage
+coverage
+.nyc_output
+tests
+
+# Temporary files
+*.tmp
+*.log
+*.zip
+*.tgz
+temp*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Patches (not needed in container)
+patches
+
+# Utils (publishing scripts not needed in container)
+utils/publish*.sh
+utils/*.sh.SAMPLE
+utils/*.sh
+!utils/gulp-helpers.js
+!utils/patch-build.js
+!utils/config.js
+
+# Documentation
+README.md
+TODO.md
+*.md
+!README.md
+
+# Config files not needed in container
+playwright.config.ts
+gulpfile.js
+
+# Other
+.vercel
+.output
+*.session
+~$*.doc
+
