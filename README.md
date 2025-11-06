@@ -17,6 +17,28 @@ Repository: https://github.com/lilliputten/svelte-randonneur-app
 
 Deploy demo server (with recent build): https://svelte-randonneur-app.lilliputten.ru
 
+## Data Format
+
+This application expects randonneur data files in the standardized format. Data items use nested structures:
+- **Replace/Delete items**: Use nested `source` objects (e.g., `{source: {uuid: "...", name: "..."}, comment: "..."}`)
+- **Update items**: Use nested `source` and `target` objects
+
+See `docs/DATA_FORMAT.md` for detailed format specification.
+
+The application automatically handles nested structures by flattening them for table display (e.g., `source.uuid`, `source.name`).
+
+## Configuration
+
+### Custom Footer HTML
+
+To customize the footer text that appears after the "Data file" information, edit the `footerCustomHtml` constant in `src/core/constants/app/params.ts`:
+
+```typescript
+export const footerCustomHtml = 'Made by <a href="https://cauldron.ch">Cauldron</a> for <a href="https://github.com/sentier-dev/">Sentier.dev</a>';
+```
+
+The string can contain HTML and will be rendered directly in the footer. You can set it to an empty string to disable the custom footer text, or modify it to include your own links and content.
+
 ## Project workflow
 
 ### Svelte dev environment

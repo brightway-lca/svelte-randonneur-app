@@ -81,7 +81,8 @@ export function getAvailableRandoDataSetKeys(): TRandoDataSetKey[] {
       const data = get(setStore);
       return data && id;
     })
-    .filter(Boolean) as TRandoDataSetKey[];
+    .filter(Boolean)
+    .filter((id) => id !== 'mapping') as TRandoDataSetKey[]; // Exclude mapping from sidebar (it's metadata only)
 }
 
 export function getAllRandoDataSets() {

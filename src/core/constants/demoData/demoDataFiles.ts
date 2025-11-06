@@ -2,28 +2,32 @@
 export const demoDataPath = '/data/';
 export const demoDataFiles = [
   {
-    id: 'minimal-1',
-    filename: 'minimal-1.json',
+    id: 'ecoinvent-3.10.1-biosphere-ecoinvent-3.11-biosphere',
+    filename: 'ecoinvent-3.10.1-biosphere-ecoinvent-3.11-biosphere.json',
   },
   {
-    id: 'agribalyse-3.1.1-biosphere-ecoinvent-3.8-biosphere',
-    filename: 'agribalyse-3.1.1-biosphere-ecoinvent-3.8-biosphere.json',
+    id: 'generic-brightway-unit-conversions',
+    filename: 'generic-brightway-unit-conversions.json',
   },
   {
-    id: 'ecoinvent-biosphere-3.8-3.9-example',
-    filename: 'ecoinvent-biosphere-3.8-3.9-example.json',
+    id: 'ecoinvent-3.10.1-cutoff-ecoinvent-3.11-cutoff',
+    filename: 'ecoinvent-3.10.1-cutoff-ecoinvent-3.11-cutoff.gz',
   },
   {
-    id: 'simapro-selection-to-ecoinvent-3.9-biosphere',
-    filename: 'simapro-selection-to-ecoinvent-3.9-biosphere.json',
+    id: 'ecoinvent-3.11-biosphere-EF-3.1-biosphere',
+    filename: 'ecoinvent-3.11-biosphere-EF-3.1-biosphere.gz',
   },
   {
-    id: 'UVEK-2022-to-ecoinvent-3.9-partial-mining',
-    filename: 'UVEK-2022-to-ecoinvent-3.9-partial-mining.json',
+    id: 'simapro-9-ecoinvent-3-water-slash-m3',
+    filename: 'simapro-9-ecoinvent-3-water-slash-m3.gz',
   },
   {
-    id: 'UVEK-2022-to-ecoinvent-3.9-partial-transport',
-    filename: 'UVEK-2022-to-ecoinvent-3.9-partial-transport.json',
+    id: 'simapro-biosphere-2024-ecoinvent-3.9-biosphere',
+    filename: 'simapro-biosphere-2024-ecoinvent-3.9-biosphere.gz',
+  },
+  {
+    id: 'simapro-ecoinvent-3.10-cutoff',
+    filename: 'simapro-ecoinvent-3.10-cutoff.gz',
   },
 ];
 export const defaultDataFileIdx = 0;

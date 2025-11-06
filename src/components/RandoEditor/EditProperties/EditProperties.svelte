@@ -17,7 +17,7 @@
 </script>
 
 <div class="EditProperties">
-  <GenericEditable spec={propertiesSpec} data={$randoPropertiesStore} {onChange} />
+  <GenericEditable spec={propertiesSpec} data={$randoPropertiesStore} readonly={true} />
 </div>
 
 <style src="./EditProperties.scss" lang="scss"></style>

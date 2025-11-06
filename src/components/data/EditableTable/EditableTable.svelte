@@ -79,6 +79,7 @@
   export let data: TEditableListData = [];
   export let onChange: TOnChangeCallback | undefined = undefined;
   export let setHasFilters: ((hasFilters: boolean) => void) | undefined = undefined;
+  export let readonly: boolean = false;
 
   /** The table dom node */
   let tableElement: HTMLTableElement;

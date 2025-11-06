@@ -22,6 +22,7 @@
   export let spec: TEditableObjectSpec;
   export let data: TEditableObjectData = {};
   export let onChange: TOnChangeCallback | undefined = undefined;
+  export let readonly: boolean = false;
 
   const { id, spec: fieldsSpec, layout } = spec;
 
@@ -70,6 +71,6 @@
     </div>
   {/if}
   {#each ensureArray(fieldsSpec) as item}
-    <GenericEditable spec={item} data={data[item.id]} onChange={handleItemChange} />
+    <GenericEditable spec={item} data={data[item.id]} onChange={readonly ? undefined : handleItemChange} readonly={readonly} />
   {/each}
 </div>

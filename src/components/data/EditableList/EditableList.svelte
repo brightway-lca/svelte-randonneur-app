@@ -25,6 +25,7 @@
   export let spec: TEditableListSpec;
   export let data: TEditableListData = [];
   export let onChange: TOnChangeCallback | undefined = undefined;
+  export let readonly: boolean = false;
 
   const { id, spec: itemSpec, layout } = spec;
 
@@ -96,36 +97,43 @@
   <div class={styles.Wrapper}>
     <div class={styles.ItemsWrapper}>
       {#each localList as itemValue, idx (uniqueIndices[idx])}
+        {@const itemLabel = itemSpec.label || itemSpec.title || (itemSpec.type !== 'object' ? `Element ${idx + 1}` : undefined)}
+        {@const itemSpecWithLabel = itemLabel ? { ...itemSpec, label: itemLabel } : itemSpec}
         <div class={styles.Item} id={[spec.id, uniqueIndices[idx]].join('-')} data-idx={idx}>
           <GenericEditable
             className={styles.ItemElement}
-            spec={itemSpec}
+            spec={itemSpecWithLabel}
             data={itemValue}
-            onChange={handleItemChange.bind(null, idx)}
+            onChange={readonly ? undefined : handleItemChange.bind(null, idx)}
+            {readonly}
           />
           <!-- Actions -->
-          <ActionIcon
-            class={styles.removeRowIcon}
-            variant="light"
-            on:click={handleRemoveItem}
-            size={parseInt(cssVariables.defaultInputHeightPx)}
-            title="Remove item"
-          >
-            <Trash />
-          </ActionIcon>
+          {#if !readonly}
+            <ActionIcon
+              class={styles.removeRowIcon}
+              variant="light"
+              on:click={handleRemoveItem}
+              size={parseInt(cssVariables.defaultInputHeightPx)}
+              title="Remove item"
+            >
+              <Trash />
+            </ActionIcon>
+          {/if}
         </div>
       {/each}
     </div>
     <!-- Actions -->
-    <ActionIcon
-      class={styles.addRowIcon}
-      variant="light"
-      on:click={handleAddItem}
-      size={parseInt(cssVariables.defaultInputHeightPx)}
-      title="Add new item"
-    >
-      <Plus />
-    </ActionIcon>
+    {#if !readonly}
+      <ActionIcon
+        class={styles.addRowIcon}
+        variant="light"
+        on:click={handleAddItem}
+        size={parseInt(cssVariables.defaultInputHeightPx)}
+        title="Add new item"
+      >
+        <Plus />
+      </ActionIcon>
+    {/if}
   </div>
 </div>
 

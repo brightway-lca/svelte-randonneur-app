@@ -21,6 +21,30 @@
   font-size: 190%;
 }
 
+.Help {
+  font-size: 90%;
+  color: #666;
+  line-height: 1.2;
+}
+
+// Legend formatting styles matching SimpleTable diff styles
+.DiffMatch {
+  color: #3c8e82 !important;
+  font-style: italic;
+}
+
+.DiffRemoved {
+  text-decoration: line-through !important;
+  text-decoration-color: #d32f2f !important;
+  color: #d32f2f !important;
+  opacity: 0.7;
+}
+
+.DiffAdded {
+  color: #45bfb0 !important;
+  font-weight: bold;
+}
+
 .MiddleMenu,
 .RightMenu {
   display: flex;

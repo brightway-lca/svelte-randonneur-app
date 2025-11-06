@@ -5,10 +5,8 @@
   import { hotkey, useOs } from '@svelteuidev/composables';
   import classNames from 'classnames';
 
-  import { appTitle, getMainMenu } from '@/src/core/constants/app';
-  import { hasDataStore } from '@/src/store';
-
-  import { RandoLogo } from '@/src/components/app/RandoLogo';
+  import { appTitle, getMainMenu, browserPageUrl, rootPageUrl } from '@/src/core/constants/app';
+  import { hasDataStore, randoPropertiesStore } from '@/src/store';
 
   import { isActiveMainMenuItem } from './helpers';
 
@@ -41,50 +39,71 @@
   override={{ height: '100%', px: 20 }}
   position="apart"
 >
-  <Burger
-    opened={menuOpened}
-    on:click={toggleMenu}
-    override={{ d: 'block', '@sm': { d: 'none' } }}
-  />
-  <a class={styles.AppTitle} href="/" on:click={closeMenu}>
-    <Group title={appTitle}>
-      <RandoLogo size={35} />
-      <Text color="blue" size="xl" override={{ d: 'none', '@sm': { d: 'block' } }}>
-        {appTitle}
-      </Text>
-    </Group>
-  </a>
-  <Box class={styles.HeadContent_AppMenu}>
-    {#each mainMenu as item}
-      <!-- Use hook for process menu conditions? -->
-      {#if item.conditions !== 'hasData' || $hasDataStore}
-        <!--
-        For `Button` elements (doesn't work: makes hard reload instead internal navigation, TODO?):
-        _variant={isActive(item) ? 'filled' : 'subtle'}
-      -->
-        <Anchor
-          href={item.url}
-          class={classNames(
-            styles.HeadContent_AppMenu_Item,
-            isActiveMainMenuItem(item, pageUrl) && styles.HeadContent_AppMenu_ItemActive,
-          )}
-        >
-          {item.text}
-        </Anchor>
-      {/if}
-    {/each}
-  </Box>
-  <ActionIcon
-    variant="default"
-    on:click={toggleTheme}
-    size={30}
-    use={[[hotkey, [['mod+J', toggleTheme]]]]}
-    title={`Toggle dark theme (${mod}-J)`}
-  >
-    {#if isDark}
-      <Moon />
-    {:else}
-      <Sun />
+  <Group override={{ gap: 16 }}>
+    <Burger
+      opened={menuOpened}
+      on:click={toggleMenu}
+      override={{ d: 'block', '@sm': { d: 'none' } }}
+    />
+    <a class={styles.AppTitle} href="/" on:click={closeMenu}>
+      <Group title={appTitle}>
+        <img
+          src="/images/app/logo-wheel.png"
+          alt={appTitle}
+          class={styles.HeadContent_LogoWheel}
+        />
+        <Text color="green" size="xl" override={{ d: 'none', '@sm': { d: 'block' } }}>
+          {appTitle}
+        </Text>
+      </Group>
+    </a>
+    <Box class={styles.HeadContent_AppMenu}>
+      {#each mainMenu as item}
+        <!-- Use hook for process menu conditions? -->
+        {@const isOnBrowserPage = item.url === browserPageUrl && pageUrl === browserPageUrl}
+        {@const isOnLoadDataPage = item.url === rootPageUrl && pageUrl === rootPageUrl}
+        {@const displayText = isOnBrowserPage && item.url === rootPageUrl ? 'Load new data' : item.text}
+        {#if (item.conditions !== 'hasData' || $hasDataStore) && !isOnBrowserPage && !isOnLoadDataPage}
+          <!--
+          For `Button` elements (doesn't work: makes hard reload instead internal navigation, TODO?):
+          _variant={isActive(item) ? 'filled' : 'subtle'}
+        -->
+          <Anchor
+            href={item.url}
+            class={classNames(
+              styles.HeadContent_AppMenu_Item,
+              isActiveMainMenuItem(item, pageUrl) && styles.HeadContent_AppMenu_ItemActive,
+            )}
+          >
+            {displayText}
+          </Anchor>
+        {/if}
+      {/each}
+    </Box>
+  </Group>
+  <Group override={{ gap: 16, alignItems: 'center' }}>
+    {#if $randoPropertiesStore?.name}
+      <Box class={styles.HeadContent_DataFileName}>
+        <Text size="sm" color="dimmed">
+          Data name:
+        </Text>
+        <Text size="sm" weight={500}>
+          {$randoPropertiesStore.name}
+        </Text>
+      </Box>
     {/if}
-  </ActionIcon>
+    <ActionIcon
+      variant="default"
+      on:click={toggleTheme}
+      size={30}
+      use={[[hotkey, [['mod+J', toggleTheme]]]]}
+      title={`Toggle dark theme (${mod}-J)`}
+    >
+      {#if isDark}
+        <Moon />
+      {:else}
+        <Sun />
+      {/if}
+    </ActionIcon>
+  </Group>
 </Group>

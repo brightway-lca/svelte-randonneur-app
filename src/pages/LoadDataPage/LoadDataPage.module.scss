@@ -3,15 +3,12 @@
   transition: all 250ms;
   width: 100%;
   position: relative;
-
   overflow: auto;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  min-height: 100vh;
 
   .WaiterPanel {
-    /*!KEEP*/
     position: absolute;
     left: 0;
     right: 0;
@@ -38,127 +35,199 @@
     pointer-events: none;
   }
 
-  .Wrapper {
+  // Header with Logo
+  .Header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    border-bottom: 3px solid color.change($primaryColor, $alpha: 0.2);
+    background-color: #fff;
+  }
+  &.dark .Header {
+    background-color: #1e1e1e;
+    border-bottom-color: color.change($primaryColor, $alpha: 0.4);
+  }
+
+  .LogoContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .LogoWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+
+  .Logo {
+    height: 120px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+  }
+
+  .LogoText {
+    font-size: 28px;
+    font-weight: 600;
+    color: $primaryColor;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+  }
+  &.dark .LogoText {
+    color: #65cabe;
+  }
+
+  .Description {
+    margin-top: 8px;
+    text-align: center;
+    max-width: 700px;
+    
+    p {
+      margin: 12px 0;
+      color: $defaultTextColor;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+  }
+  &.dark .Description p {
+    color: #e0e0e0;
+  }
+
+  // Action Section - two boxes side by side
+  .ActionSection {
     flex: 1;
     display: flex;
     flex-direction: column;
+    gap: 12px;
+    padding: 16px 12px;
     justify-content: center;
     align-items: stretch;
+    max-width: 1200px;
+    margin: 8px auto 0; // tighter to header separator
     width: 100%;
+    
+    @media (min-width: 768px) {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 16px;
+    }
   }
 
-  .SplashSection {
-    flex: 1;
+  .ActionBox {
+    flex: 0 1 auto;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    align-items: center;
-    border-bottom: 1px solid color.change($neutralColor, $alpha: 0.2);
-    position: relative;
-    // min-height: 260px;
-    @media (max-height: $headerHeightTresholdMaxPx) {
-      display: none;
-    }
-  }
-  .SplashBackground {
-    opacity: 0.7;
-    background-image: url('@/src/lib/images/splash-1.jpg');
-    background-position: bottom center;
-    background-repeat: no-repeat;
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0px;
-  }
-  &.dark .SplashBackground {
-    background-image: url('@/src/lib/images/splash-1-dark.jpg');
-  }
-  .SplashContent {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-    // margin: 20px;
-    // margin-top: 50px;
-    top: 10%;
-  }
-  .AppTitle {
-    font-size: 150%;
-  }
-
-  .LoadSection {
-    position: relative;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: stretch;
-    max-width: 800px;
-    @media (min-width: 768px) {
-      width: 70%;
-    }
-    margin: 0 auto;
-    padding: 20px;
+    min-height: 80px;
+    max-width: 350px;
+    padding: 12px;
+    background-color: transparent;
+    transition: all 0.2s ease;
+  }
+  &.dark .ActionBox {
+    background-color: transparent;
   }
 
-  section {
-    margin: 16px 0;
-    // padding: 0 20px;
-    &.vpadded {
-      padding-top: 16px;
-      padding-bottom: 16px;
-    }
-    &.delimited {
-      // border-top: 1px solid color.change(black, $alpha: 0.1);
-    }
-    text-align: center;
-  }
-
-  .SectionLabel {
-    font-weight: bold;
+  .BoxHeader {
+    font-weight: 700;
     color: $primaryColor;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
   }
 
-  .formGroup {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .FileUploadField {
-    border: 5px soild red !important;
+  .FileUploadButton {
+    width: 100%;
+    max-width: 320px;
     position: relative;
     overflow: hidden;
     cursor: pointer;
-    max-width: 250px;
-    display: flex;
-    > span {
-      flex: 1;
-      // display: block;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      // max-width: 100%;
-    }
-    > input {
-      opacity: 0;
-      border: 1px soild red;
-      position: absolute;
-      background-color: red;
-      overflow: hidden;
-      height: 100%;
+    font-size: 14px;
+    padding: 12px 16px;
+    
+    :global(&.svelteui-Button-root) {
+      background-color: #3c8e82 !important;
+      color: white !important;
+      border-color: #3c8e82 !important;
       width: 100%;
-      &,
-      &::-webkit-file-upload-button {
-        cursor: pointer;
+      
+      &:hover {
+        background-color: #45a79b !important;
+        border-color: #45a79b !important;
       }
     }
+    
+    > span {
+      display: block;
+      text-align: center;
+    }
+    
+    > input {
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+  }
+
+  .ExampleDataSelect {
+    width: 100%;
+    max-width: 320px;
+    
+    :global(.svelteui-NativeSelect-root) {
+      width: 100%;
+      font-size: 14px;
+      padding: 10px 14px;
+    }
+    
+    :global(select:focus) {
+      border-color: #3c8e82 !important;
+      box-shadow: 0 0 0 1px rgba(60, 142, 130, 0.2) !important;
+    }
+  }
+
+  // Footer with info text
+  .Footer {
+    width: 100%;
+    padding: 30px 20px;
+    text-align: center;
+    border-top: 1px solid color.change($neutralColor, $alpha: 0.2);
+    background-color: #f5f5f5;
+  }
+  &.dark .Footer {
+    background-color: #2a2a2a;
+    border-top-color: color.change($neutralColor, $alpha: 0.4);
+  }
+
+  .InfoText {
+    margin: 8px 0;
+    color: $defaultTextColor;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  &.dark .InfoText {
+    color: #e0e0e0;
+  }
+
+  .GithubLink {
+    color: $primaryColor;
+    text-decoration: none;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  &.dark .GithubLink {
+    color: #65cabe;
   }
 }

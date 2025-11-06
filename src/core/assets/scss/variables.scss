@@ -29,12 +29,13 @@ $defaultFontFamily: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helve
 // Base colors...
 
 // TODO: Extract color variables from svelteui?
-$primaryColorMUI: #1976d2; // UNUSED?
-$primaryColor: #339af0;
+// Colors extracted from logo-wheel.png (teal-green palette)
+$primaryColorMUI: #3c8e82; // Darker teal-green from logo (was #1976d2)
+$primaryColor: #45bfb0; // Medium teal-green from logo (was #339af0)
 $secondaryColor: #ffa550;
 
 $defaultTextColor: #333;
-$defaultLinkColor: #003d9d;
+$defaultLinkColor: #3c8e82; // Dark teal-green for links (was #003d9d)
 $neutralColor: #888;
 
 $errorColor: #c33;

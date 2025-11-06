@@ -20,6 +20,10 @@ export function extractRandoProperties() {
     licenses, // (4) [{…}, {…}, {…}, {…}]
     contributors, // (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
     created, // '2023-03-11T09:53:59.74Z'
+    mapping, // Mapping configuration (metadata)
+    source_id, // Source database identifier
+    target_id, // Target database identifier
+    graph_context, // Graph context types
   } = randoData;
   const randoProperties: TRandoProperties = {
     name, // 'ecoinvent-3.8-to-3.9-biosphere-example'
@@ -29,6 +33,10 @@ export function extractRandoProperties() {
     licenses, // (4) [{…}, {…}, {…}, {…}]
     contributors, // (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
     created, // '2023-03-11T09:53:59.74Z'
+    mapping, // Mapping configuration (metadata)
+    source_id, // Source database identifier
+    target_id, // Target database identifier
+    graph_context, // Graph context types
   };
   randoPropertiesStore.set(randoProperties);
 }
@@ -47,6 +55,10 @@ export function saveRandoProperties() {
   const licenses = randoProperties?.licenses; // (4) [{…}, {…}, {…}, {…}]
   const contributors = randoProperties?.contributors; // (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
   const created = randoProperties?.created; // '2023-03-11T09:53:59.74Z'
+  const mapping = randoProperties?.mapping; // Mapping configuration (metadata)
+  const source_id = randoProperties?.source_id; // Source database identifier
+  const target_id = randoProperties?.target_id; // Target database identifier
+  const graph_context = randoProperties?.graph_context; // Graph context types
   randoDataStore.update((randoData) => {
     return {
       ...randoData,
@@ -57,6 +69,10 @@ export function saveRandoProperties() {
       licenses,
       contributors,
       created,
+      mapping,
+      source_id,
+      target_id,
+      graph_context,
     } as TRandoData;
   });
 }

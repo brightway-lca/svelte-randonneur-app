@@ -16,6 +16,7 @@
 
   export let label: string | undefined = undefined;
   export let placeholder: string | undefined = undefined;
+  export let disabled: boolean = false;
 
   // TODO: Pass over all props from `TextInputProps`...
   // @see `node_modules/@svelteuidev/core/dist/components/TextInput/TextInput.svelte.d.ts`
@@ -148,14 +149,17 @@
   <TextInput
     bind:element={inputReference}
     value={textValue || ''}
-    on:change={handleTextDate}
+    on:change={disabled ? undefined : handleTextDate}
     {label}
     {placeholder}
+    {disabled}
   >
     <svelte:fragment slot="rightSection">
-      <ActionIcon on:click={toggleCalendarPopup} title="Toggle date selector">
-        <Calendar />
-      </ActionIcon>
+      {#if !disabled}
+        <ActionIcon on:click={toggleCalendarPopup} title="Toggle date selector">
+          <Calendar />
+        </ActionIcon>
+      {/if}
     </svelte:fragment>
   </TextInput>
   <Popper

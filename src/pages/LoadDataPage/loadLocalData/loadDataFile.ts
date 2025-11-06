@@ -1,5 +1,6 @@
 import { getErrorText } from '@/src/core/helpers/basic';
 import { safeParseJson } from '@/src/core/helpers/data';
+import { decompressGzip, isGzipFile } from '@/src/core/helpers/data/decompressGzip';
 
 export interface TLoadDataFileProgressParams {
   /** Percents of loaded data amount */
@@ -34,6 +35,7 @@ export function loadDataFile<T = unknown>(
     size: fileSize,
   } = file;
   const { onProgress, onLoaded, onError, timeout } = opts;
+  const isCompressed = isGzipFile(fileName);
   return new Promise<TLoadedDataWithSize<T>>(function loadDataFile_promise(resolve, reject) {
     const fileReader = new FileReader();
     /* console.log('[loadDataFile:onloadend] start', {
@@ -116,7 +118,7 @@ export function loadDataFile<T = unknown>(
       };
     }
     // Successfully data loaded handler...
-    fileReader.onloadend = function loadDataFile_onLoaded(ev: ProgressEvent<FileReader>) {
+    fileReader.onloadend = async function loadDataFile_onLoaded(ev: ProgressEvent<FileReader>) {
       const {
         // isTrusted, // true
         // bubbles, // false
@@ -135,7 +137,20 @@ export function loadDataFile<T = unknown>(
         // total, // 5878
       } = ev;
       try {
-        const jsonText = target?.result as string;
+        let jsonText: string;
+        
+        if (isCompressed) {
+          // For compressed files, result is ArrayBuffer
+          const compressedData = target?.result as ArrayBuffer;
+          if (!compressedData) {
+            throw 'Received empty compressed data';
+          }
+          jsonText = await decompressGzip(compressedData);
+        } else {
+          // For regular files, result is string
+          jsonText = target?.result as string;
+        }
+        
         // TODO: Catch parse errors...
         const data = jsonText && safeParseJson<T>(jsonText);
         if (!data) {
@@ -156,7 +171,7 @@ export function loadDataFile<T = unknown>(
         if (onLoaded) {
           onLoaded({ data, fileReader });
         }
-        return resolve({ data, size: fileSize });
+        return resolve({ data, size: jsonText.length });
       } catch (error) {
         const errMsg = [
           'Data processing error for file "' + fileName + '"',
@@ -236,6 +251,11 @@ export function loadDataFile<T = unknown>(
       return reject(resultError);
     };
     // Start loading...
-    fileReader.readAsText(file);
+    // For compressed files, read as array buffer; otherwise read as text
+    if (isCompressed) {
+      fileReader.readAsArrayBuffer(file);
+    } else {
+      fileReader.readAsText(file);
+    }
   });
 }

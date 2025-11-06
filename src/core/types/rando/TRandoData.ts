@@ -10,6 +10,10 @@ export interface TRandoProperties {
   licenses: unknown[]; // (4) [{…}, {…}, {…}, {…}]
   contributors: unknown[]; // (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
   created: string; // '2023-03-11T09:53:59.74Z'
+  mapping?: unknown; // Mapping configuration (metadata, not a data section)
+  source_id?: string; // Source database identifier
+  target_id?: string; // Target database identifier
+  graph_context?: unknown[]; // Graph context types
 }
 export type TRandoPropertiesSlot = TRandoProperties | undefined;
 

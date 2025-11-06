@@ -15,20 +15,16 @@ export interface TMainMenu {
 
 export const mainMenu: TMainMenu[] = [
   {
-    text: 'Start',
+    text: 'Load new data',
     url: rootPageUrl,
     compare: 'exact',
   },
   {
-    text: 'Browser',
+    text: 'Browse current data',
     url: browserPageUrl,
     conditions: 'hasData', // TODO: Make it conditional: show (enable) only if data has already loaded
   },
-  dev && {
-    text: 'Demo',
-    url: demoPageUrl,
-  },
-].filter(Boolean) as TMainMenu[];
+];
 
 // TODO: Implement as a store and update actual items by subcriptions (on `hasData`, for example
 

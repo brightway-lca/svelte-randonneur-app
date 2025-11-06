@@ -5,14 +5,13 @@
 
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { browser } from '$app/environment';
   import { writable } from 'svelte/store';
   import { goto } from '$app/navigation';
-  import { colorScheme, Text, NativeSelect, Button } from '@svelteuidev/core';
+  import { colorScheme, NativeSelect, Button } from '@svelteuidev/core';
   import { Loader } from '@svelteuidev/core';
   import { Paper } from '@svelteuidev/core';
   import classNames from 'classnames';
-
-  import { RandoLogo } from '@/src/components/app/RandoLogo';
 
   import { addToast } from '@/src/components/ui/Toasts';
   import { getApproxSize, getErrorText } from '@/src/core/helpers/basic';
@@ -25,64 +24,67 @@
 
   import { loadDemoDataByIdx, getDemoDataFileId, getDemoDataName } from './loadDemoData';
   import { loadDataFile } from './loadLocalData';
+  import { isGzipFile } from '@/src/core/helpers/data/decompressGzip';
 
   import styles from './LoadDataPage.module.scss';
 
+  const GITHUB_REPO_URL = 'https://github.com/brightway-lca/svelte-randonneur-app';
+  const RANDONNEUR_REPO_URL = 'https://github.com/brightway-lca/randonneur';
+
   $: isDark = $colorScheme === 'dark';
 
-  let demoDataFileIdx = defaultDataFileIdx;
+  let demoDataFileIdx: string = String(defaultDataFileIdx);
+  let previousDemoDataFileIdx: string | undefined = undefined;
   let loadingDemoData = false;
 
   let localDataFile: File | undefined = undefined;
   let loadingLocalData = false;
 
-  const demoDataFilesSelectData = demoDataFiles.map(({ id /* , filename */ }, idx) => {
+  const demoDataFilesSelectData = demoDataFiles.map(({ id }, idx) => {
     return { label: id, value: String(idx) };
   });
 
   $: loading = loadingDemoData || loadingLocalData;
 
-  let localFileText = 'Select and upload local file';
+  let buttonLabel = 'Upload Randonneur file';
+
+  // Automatically load when demo data selection changes
+  $: {
+    if (previousDemoDataFileIdx !== undefined && demoDataFileIdx !== previousDemoDataFileIdx) {
+      previousDemoDataFileIdx = demoDataFileIdx;
+      if (demoDataFileIdx) {
+        loadDemoData();
+      }
+    } else if (previousDemoDataFileIdx === undefined) {
+      previousDemoDataFileIdx = demoDataFileIdx;
+    }
+  }
 
   function loadDemoData() {
-    const dataId = getDemoDataFileId(demoDataFileIdx);
-    const fileName = getDemoDataName(demoDataFileIdx);
-    /* console.log('[LoadDataPage:loadDemoData] start', {
-     *   dataId,
-     * });
-     */
+    const idx = parseInt(demoDataFileIdx, 10);
+    const dataId = getDemoDataFileId(idx);
+    const fileName = getDemoDataName(idx);
     loadingDemoData = true;
-    // Show notification
-    // addToast({ message: 'Demo data loading started', type: 'info' });
-    loadDemoDataByIdx<TRandoData>(demoDataFileIdx)
+    loadDemoDataByIdx<TRandoData>(idx)
       .then(({ data, size }) => {
-        /* console.log('[LoadDataPage:loadDemoData] success', {
-         *   dataId,
-         *   data,
-         *   size,
-         * });
-         */
         setRandData(data);
         randoFileInfoStore.set({
           name: fileName,
           type: 'demo',
           size,
         });
-        // Show notification
-        addToast({ message: 'Demo data loading successfully finished', type: 'success' });
-        goToMainAppPage(); // Issue #22: Immediatelly go to main page
+        // Ensure left sidebar starts expanded on first entry
+        if (browser) {
+          localStorage.setItem('rando-left-panel-collapsed', 'false');
+        }
+        goToMainAppPage();
       })
       .catch((error) => {
-        // TODO: Append explaining message...
         const errorMsg = getErrorText(error);
-        // eslint-disable-next-line no-console
         console.error('[LoadDataPage:loadDemoData] error', errorMsg, {
           error,
           dataId,
         });
-        // eslint-disable-next-line no-debugger
-        debugger;
-        // TODO: Show an error?
         addToast({ message: errorMsg, type: 'error' });
       })
       .finally(() => {
@@ -92,76 +94,52 @@
 
   function handleLocalFile(ev: Event) {
     const target = ev.target as HTMLInputElement;
-    //
     const files = target.files;
     const file = files && files[0];
     if (!file) {
-      // Error...
       const error = new Error('No file selected!');
-      // eslint-disable-next-line no-console
       console.warn('[LoadDataPage:handleLocalFile] error', {
         error,
       });
       return;
     }
     const {
-      // prettier-ignore
       name: fileName,
       type: fileType,
       size: fileSize,
     } = file;
-    // const fileInfo = { fileName, fileType, fileSize };
-    if (!/\.json$/.test(fileName) || fileType !== 'application/json') {
-      // Error...
-      const error = new Error('Expected json data file!');
-      // eslint-disable-next-line no-console
+
+    // Check if file is a gzip file
+    const isCompressed = isGzipFile(fileName);
+
+    // Accept both .json files and .gz files
+    const isJsonFile = /\.json$/.test(fileName) && (fileType === 'application/json' || fileType === '');
+    if (!isJsonFile && !isCompressed) {
+      const error = new Error('Expected json or .gz data file!');
       console.warn('[LoadDataPage:handleLocalFile] error', {
         error,
       });
       return;
     }
-    /* console.log('[LoadDataPage:handleLocalFile]', {
-     *   fileInfo,
-     *   files,
-     *   file,
-     *   ev,
-     * });
-     */
     localDataFile = file;
     const size = getApproxSize(fileSize, { normalize: true }).join('');
-    localFileText = `${fileName} (${size})`;
+    buttonLabel = `${fileName} (${size})`;
     loadLocalData();
   }
 
   function loadLocalData() {
     if (!localDataFile) {
       const error = new Error('No local file defined');
-      // eslint-disable-next-line no-console
       console.warn('[LoadDataPage:loadLocalData] error', {
         error,
       });
-      // eslint-disable-next-line no-debugger
-      debugger;
       return;
     }
-    /* console.log('[LoadDataPage:loadLocalData] start', {
-     *   localDataFile,
-     * });
-     */
-    // Show notification
-    // addToast({ message: 'Local data loading started', type: 'info' });
     loadingLocalData = true;
     loadDataFile<TRandoData>(localDataFile, {
       timeout: 5000,
-      // onProgress: handleLoadingProgress,
     })
       .then(({ data }) => {
-        /* console.log('[LoadDataPage:loadLocalData] success', {
-         *   localDataFile,
-         *   data,
-         *   // size,
-         * });
-         */
         setRandData(data);
         if (localDataFile) {
           randoFileInfoStore.set({
@@ -170,22 +148,20 @@
             size: localDataFile.size,
           });
         }
-        // Show notification
-        addToast({ message: 'Local data loading successfully finished', type: 'success' });
-        goToMainAppPage(); // Issue #22: Immediatelly go to main page
+        // Ensure left sidebar starts expanded on first entry
+        if (browser) {
+          localStorage.setItem('rando-left-panel-collapsed', 'false');
+        }
+        goToMainAppPage();
       })
       .catch((error) => {
         const errorMsg = getErrorText(error);
-        // eslint-disable-next-line no-console
         console.error('[LoadDataPage:loadLocalData] error', errorMsg, {
           error,
           localDataFile,
         });
-        // eslint-disable-next-line no-debugger
-        debugger;
-        // Show an error?
         addToast({ message: errorMsg, type: 'error' });
-        goToMainAppPage(); // Issue #22: Immediatelly go to main page
+        goToMainAppPage();
       })
       .finally(() => {
         loadingLocalData = false;
@@ -194,21 +170,12 @@
 
   const initedStore = writable(false);
   let goingOutStore = writable(false);
-  // let goingOut = false;
 
   onMount(() => {
-    /* // DEBUG: Test toasts
-     * addToast({
-     *   message:
-     *     "The row has been already created but couldn't be found, possibly due to the current filter settings. Try to clear or change filters.",
-     *   type: 'info',
-     *   timeout: 0,
-     * });
-     */
     initedStore.set(true);
   });
 
-  /** Go to the data data */
+  /** Go to the data browser */
   function goToMainAppPage() {
     if ($hasDataStore) {
       goingOutStore.set(true);
@@ -218,7 +185,7 @@
 </script>
 
 <svelte:head>
-  <title>Start — {appTitle}</title>
+  <title>Load data — {appTitle}</title>
 </svelte:head>
 
 <div
@@ -229,93 +196,67 @@
     isDark && styles.dark,
   )}
 >
-  <div class={styles.Wrapper}>
-    <div class={styles.SplashSection}>
-      <div class={styles.SplashBackground}></div>
-      <div class={styles.SplashContent} title={appTitle}>
-        <!-- Splash -->
-        <RandoLogo size={50} />
-        <Text class={styles.AppTitle} color="blue" size="xl">
-          {appTitle}
-        </Text>
+  <!-- Header with Logo -->
+  <header class={styles.Header}>
+    <div class={styles.LogoContainer}>
+      <div class={styles.LogoWrapper}>
+        <img src="/logo.png" alt={appTitle} class={styles.Logo} />
+        <h1 class={styles.LogoText}>Data Browser</h1>
+      </div>
+      <div class={styles.Description}>
+        <p>
+          Randonneur is a <a href={RANDONNEUR_REPO_URL} target="_blank" rel="noopener noreferrer" class={styles.GithubLink}>open format for specifying sustainability assessment data transformations</a>.
+        </p>
+        <p>
+          This <a href={GITHUB_REPO_URL} target="_blank" rel="noopener noreferrer" class={styles.GithubLink}>open source app</a> allow people to browse Randonneur files.
+        </p>
+        <p>
+          Uploading data will send it to the server, but no data is saved.
+        </p>
       </div>
     </div>
+  </header>
 
-    <div class={styles.LoadSection}>
-      <section id="loadLocalData" class={styles.delimited}>
-        <div class={styles.SectionLabel}>Load local data</div>
-        <div class={styles.formGroup}>
-          <Button
-            class={styles.FileUploadField}
-            id="localDataFile"
-            name="localDataFile"
-            title={localFileText}
-          >
-            <span>
-              {localFileText}
-            </span>
-            <input
-              type="file"
-              id="localDataFile"
-              name="localDataFile"
-              accept="application/json"
-              on:change={handleLocalFile}
-            />
-          </Button>
-          <!--
-          <Button id="loadLocalDataAction" on:click={loadLocalData} disabled={!localDataFile}>
-            Load local data
-          </Button>
-          -->
-        </div>
-      </section>
+  <!-- Action Sections -->
+  <div class={styles.ActionSection}>
+    <!-- Upload your data -->
+    <div class={styles.ActionBox}>
+      <div class={styles.BoxHeader}>Browse your data</div>
+      <Button
+        class={styles.FileUploadButton}
+        id="localDataFile"
+        name="localDataFile"
+        title={buttonLabel}
+      >
+        <span>{buttonLabel}</span>
+        <input
+          type="file"
+          id="localDataFileInput"
+          name="localDataFile"
+          accept="application/json,.json,.gz,application/gzip"
+          on:change={handleLocalFile}
+        />
+      </Button>
+    </div>
 
-      <section id="loadDemoData" class={styles.delimited}>
-        <div class={styles.SectionLabel}>Load demo data</div>
-        <div class={styles.formGroup}>
-          <!--
-          <select id="demoDataFile" bind:value={demoDataFileIdx}>
-            {#each demoDataFiles as file, idx}
-              <option value={idx} selected={idx === demoDataFileIdx}>
-                {file.id}
-              </option>
-            {/each}
-          </select>
-          -->
-          <NativeSelect
-            data={demoDataFilesSelectData}
-            id="demoDataFile"
-            bind:value={demoDataFileIdx}
-            placeholder="Select demo dataset"
-          />
-          <Button id="loadDemoDataAction" on:click={loadDemoData}>Load demo data</Button>
-        </div>
-      </section>
-
-      <!--
-      <section id="debug">
-        <div><button on:click={toggleHasData}>Toggle data: {$hasDataStore}</button></div>
-        <div>idx: {demoDataFileIdx}</div>
-      </section>
-      -->
-
-      <!--
-        TODO: Show loaded data info?
-      -->
-
-      <!-- // Issue #22: Immediatelly go to main page
-      <section id="actions" class={classNames('delimited', 'vpadded')}>
-        <div class={styles.formGroup}>
-          <Button id="goToMainAppPage" on:click={goToMainAppPage} disabled={!$hasDataStore}>
-            Go to the data browser
-          </Button>
-        </div>
-      </section>
-      -->
-
-      <Paper class={styles.WaiterPanel} radius={0} shadow={undefined}>
-        <Loader />
-      </Paper>
+    <!-- Browse example data -->
+    <div class={styles.ActionBox}>
+      <div class={styles.BoxHeader}>Browse example file</div>
+      <NativeSelect
+        data={demoDataFilesSelectData}
+        id="demoDataFile"
+        bind:value={demoDataFileIdx}
+        placeholder="Select example file"
+        class={styles.ExampleDataSelect}
+      />
     </div>
   </div>
+
+
+  <!-- Loading Overlay -->
+  <Paper class={styles.WaiterPanel} radius={0} shadow={undefined}>
+    <Loader />
+  </Paper>
 </div>
+
+<style src="./LoadDataPage.module.scss" lang="scss"></style>

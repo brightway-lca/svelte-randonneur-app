@@ -1,6 +1,7 @@
 import { get, writable } from 'svelte/store';
 
 import { safeParseJson } from '@/src/core/helpers/data';
+import { decompressGzip, isGzipFile } from '@/src/core/helpers/data/decompressGzip';
 import { defaultDataFileIdx, demoDataFiles, demoDataPath } from '@/src/core/constants/demoData';
 
 export const currentDemoDataFileIdx = writable<number>(defaultDataFileIdx);
@@ -27,13 +28,15 @@ interface TLoadedDataWithSize<T> {
 
 export function loadDemoDataByIdx<T = unknown>(idx: number): Promise<TLoadedDataWithSize<T>> {
   const dataUrl = getDemoDataFileUrl(idx);
+  const filename = getDemoDataName(idx);
+  const isCompressed = isGzipFile(filename);
   // const dataId = getDemoDataFileId(idx);
   /* console.log('[loadDemoData:loadDemoDataByIdx:start]', {
    *   dataUrl,
    * });
    */
   return fetch(dataUrl)
-    .then((res) => {
+    .then(async (res) => {
       const { ok, status, statusText } = res;
       if (!ok) {
         // Something went wrong?
@@ -55,16 +58,22 @@ export function loadDemoDataByIdx<T = unknown>(idx: number): Promise<TLoadedData
        *   res,
        * });
        */
-      // All is ok: return json data...
-      // NOTE: `res.json()` could fail due to NaN in the data
-      return res.text();
-    })
-    .then((jsonText) => {
-      const data = jsonText && safeParseJson<T>(jsonText);
-      if (!data) {
+      // For compressed files, get array buffer and decompress; otherwise get text
+      let jsonText: string;
+      
+      if (isCompressed) {
+        const compressedData = await res.arrayBuffer();
+        jsonText = await decompressGzip(compressedData);
+      } else {
+        // NOTE: `res.json()` could fail due to NaN in the data
+        jsonText = await res.text();
+      }
+      
+      const parsedData = jsonText && safeParseJson<T>(jsonText);
+      if (!parsedData) {
         throw 'Received empty data';
       }
       const size = jsonText.length;
-      return { data, size };
+      return { data: parsedData, size };
     });
 }

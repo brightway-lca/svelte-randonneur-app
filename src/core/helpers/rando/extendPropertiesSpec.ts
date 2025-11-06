@@ -38,12 +38,30 @@ export function extendPropertiesSpec(
     });
   }
   if (type === 'list' && spec.spec) {
-    const itemSpec = spec.spec as TEditableObjectSpec;
-    spec.layout = 'table';
-    spec.flatObjects = true;
-    spec.editInPlace = false;
-    spec.useActionsColumn = true;
-    spec.activeRows = true;
-    extendPropertiesSpec(itemSpec, level + 1, thisId, { dontAddLabels: true });
+    const itemSpec = spec.spec;
+    // Preserve existing layout if set, otherwise default to 'table' for object lists
+    if (!spec.layout) {
+      if (itemSpec.type === 'object') {
+        spec.layout = 'table';
+        spec.flatObjects = true;
+        spec.editInPlace = false;
+        spec.useActionsColumn = true;
+        spec.activeRows = true;
+        // Recursively extend object list items
+        extendPropertiesSpec(itemSpec as TEditableObjectSpec, level + 1, thisId, {
+          dontAddLabels: true,
+        });
+      } else {
+        // Scalar items default to horizontal (no pagination)
+        spec.layout = 'horizontal';
+      }
+    } else {
+      // If layout is already set, still need to recursively extend if it's an object
+      if (itemSpec.type === 'object') {
+        extendPropertiesSpec(itemSpec as TEditableObjectSpec, level + 1, thisId, {
+          dontAddLabels: true,
+        });
+      }
+    }
   }
 }

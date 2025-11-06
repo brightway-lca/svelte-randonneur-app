@@ -28,15 +28,42 @@
     border-radius: 4px;
     text-decoration: none;
     transition: all $transitionTimeMs;
+    // Use subdued teal-green from table headers
+    color: #3c8e82 !important;
+    
     &:hover {
-      background-color: color.change($primaryColor, $alpha: 0.1);
+      background-color: #e2f5f2 !important;
+      color: #3c8e82 !important;
       // text-decoration: underline;
+    }
+    
+    &:visited {
+      color: #3c8e82 !important;
     }
   }
   .HeadContent_AppMenu_ItemActive {
-    background-color: color.change($primaryColor, $alpha: 0.2);
+    background-color: #3c8e82 !important;
+    color: white !important;
+    
     &:hover {
-      background-color: color.change($primaryColor, $alpha: 0.3);
+      background-color: #45a79b !important;
     }
+    
+    &:visited {
+      color: white !important;
+    }
+  }
+  .HeadContent_DataFileName {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    @media (max-width: 767.99px) {
+      display: none;
+    }
+  }
+  .HeadContent_LogoWheel {
+    height: 35px;
+    width: auto;
+    object-fit: contain;
   }
 }

@@ -3,3 +3,50 @@
   width: 100%;
   justify-content: flex-start;
 }
+
+// Use subdued teal-green from table headers instead of bright green
+// Override SvelteUI button colors - target the button element itself
+:global(button.Section.svelteui-Button-root.svelteui-Button-light),
+:global(button.svelteui-Button-root.svelteui-Button-light.Section) {
+  color: #3c8e82 !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  
+  &:hover {
+    background-color: #e2f5f2 !important;
+    color: #3c8e82 !important;
+  }
+}
+
+:global(button.Section.svelteui-Button-root.svelteui-Button-filled),
+:global(button.svelteui-Button-root.svelteui-Button-filled.Section) {
+  background-color: #3c8e82 !important;
+  color: white !important;
+  border-color: #3c8e82 !important;
+  
+  &:hover {
+    background-color: #45a79b !important;
+    border-color: #45a79b !important;
+  }
+}
+
+// Dark mode support
+:global([data-theme='dark'] button.Section.svelteui-Button-root.svelteui-Button-light),
+:global([data-theme='dark'] button.svelteui-Button-root.svelteui-Button-light.Section) {
+  color: #65cabe !important;
+  
+  &:hover {
+    background-color: #1a4d47 !important;
+    color: #65cabe !important;
+  }
+}
+
+:global([data-theme='dark'] button.Section.svelteui-Button-root.svelteui-Button-filled),
+:global([data-theme='dark'] button.svelteui-Button-root.svelteui-Button-filled.Section) {
+  background-color: #3c8e82 !important;
+  color: white !important;
+  
+  &:hover {
+    background-color: #45a79b !important;
+  }
+}

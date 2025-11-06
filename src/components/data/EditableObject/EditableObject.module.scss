@@ -10,6 +10,23 @@
       margin-top: 0;
     }
   }
+  // Reduce whitespace in Mapping section
+  &[data-id='mapping'],
+  &[data-id='source'],
+  &[data-id='target'],
+  &[data-id='labels'] {
+    margin-top: 4px;
+    margin-bottom: 4px;
+    gap: 8px;
+    &[data-layout='vertical'] {
+      &:not(:first-child) {
+        margin-top: 4px;
+      }
+      &:not(:last-child) {
+        margin-bottom: 8px;
+      }
+    }
+  }
   .EditableObject_Label {
     @include EditableLabel;
   }

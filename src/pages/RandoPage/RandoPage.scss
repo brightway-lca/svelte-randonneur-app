@@ -24,14 +24,45 @@
   .sideColumn {
     background-color: color.change($primaryColor, $alpha: 0.05);
     border-bottom: 1px solid $borderColor;
+    transition: width $transitionTimeMs ease, min-width $transitionTimeMs ease, max-width $transitionTimeMs ease;
+    overflow: hidden;
+    position: relative;
   }
   .leftColumn {
     @media (max-width: $sideMenuTresholdMaxPx) {
       display: none;
     }
   }
+  .leftColumn.collapsed {
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    border-right: none;
+    padding: 0;
+  }
   .mainColumn {
     flex: 1;
+  }
+  .toggleButton {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid $borderColor;
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+    padding: 4px;
+    cursor: pointer;
+    display: none; // Hide on small screens, show on larger screens
+    opacity: 0.35; // semi-transparent by default
+    transition: left $transitionTimeMs ease, right $transitionTimeMs ease;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 1);
+      opacity: 1;
+    }
   }
   @media (min-width: $adaptiveTreshold) {
     .layout {
@@ -40,6 +71,7 @@
       flex-direction: row;
       overflow: hidden;
       max-height: 100%;
+      position: relative;
       & > * {
         overflow: hidden;
       }
@@ -50,6 +82,18 @@
       width: 20%;
       border-bottom: none;
       border-right: 1px solid $borderColor;
+    }
+    .toggleButton {
+      display: block;
+    }
+    .layout:not(.panelCollapsed) .toggleButton {
+      // When panel is visible, position button at the right edge of the sideColumn (which is ~20% width)
+      right: calc(100% - 20%);
+      left: auto;
+    }
+    .layout.panelCollapsed .toggleButton {
+      left: 0;
+      right: auto;
     }
   }
 }

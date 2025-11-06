@@ -1,5 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { onMount } from 'svelte';
+  import { browser } from '$app/environment';
   import {
     // Aside,
     // Divider,
@@ -19,14 +21,14 @@
   import Toasts from '@/src/components/ui/Toasts';
   import HeadContent from './HeadContent.svelte';
   import NavContent from './NavContent.svelte';
-  import { isDev, version, timestamp, demoPageUrl, browserPageUrl } from '@/src/core/constants/app';
+  import { isDev, version, demoPageUrl, browserPageUrl, footerCustomHtml } from '@/src/core/constants/app';
   import { getApproxSize } from '@/src/core/helpers/basic/numbers';
   import { randoFileInfoStore } from '@/src/store/stores/randoFileInfoStore';
 
   import './global-styles.scss';
   import styles from './AppLayout.module.scss';
 
-  const appInfo = /* `${appTitle} */ `Version: ${version} @${timestamp}`;
+  const appInfo = /* `${appTitle} */ `Version: ${version}`;
 
   $: isDark = $colorScheme === 'dark';
 
@@ -52,6 +54,23 @@
   function handleMenuClose() {
     menuOpened = false;
   }
+
+  // Initialize color scheme from browser preference and react to changes
+  onMount(() => {
+    if (!browser) return;
+    const mql = window.matchMedia('(prefers-color-scheme: dark)');
+    colorScheme.set(mql.matches ? 'dark' : 'light');
+    const handler = (ev: MediaQueryListEvent) => {
+      colorScheme.set(ev.matches ? 'dark' : 'light');
+    };
+    // Support older browsers
+    // @ts-expect-error - addEventListener may not exist on older Safari
+    (mql.addEventListener ? mql.addEventListener('change', handler) : mql.addListener(handler));
+    return () => {
+      // @ts-expect-error - removeEventListener may not exist on older Safari
+      mql.removeEventListener ? mql.removeEventListener('change', handler) : mql.removeListener(handler);
+    };
+  });
 </script>
 
 <SvelteUIProvider withNormalizeCSS withGlobalStyles themeObserver={$colorScheme}>
@@ -79,14 +98,14 @@
           Data file: <strong>{$randoFileInfoStore.name}</strong>
           {getApproxSize($randoFileInfoStore.size, { normalize: true }).join('')}
           ({$randoFileInfoStore.type})
-          {#if pageId === 'root'}
-            <Anchor href={browserPageUrl}>(browse)</Anchor>
-          {/if}
         {:else if isDev}
           <Anchor href={demoPageUrl}>Demo page</Anchor>
         {/if}
       </div>
       <div class={styles.AppLayout_Footer_Right} id="AppInfo">
+        {#if footerCustomHtml}
+          <span class={styles.AppLayout_Footer_CustomHtml}>{@html footerCustomHtml}</span>
+        {/if}
         {appInfo}
       </div>
     </Footer>

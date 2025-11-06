@@ -35,3 +35,47 @@ body,
   width: 100%;
   box-sizing: border-box;
 }
+
+// Apply teal-green color scheme to SvelteUI input components globally
+// Focus states for input elements
+:global {
+  // TextInput, NumberInput, NativeSelect focus states
+  .svelteui-TextInput-root input:focus,
+  .svelteui-NumberInput-root input:focus,
+  .svelteui-NativeSelect-root select:focus,
+  .svelteui-InputWrapper-root input:focus,
+  .svelteui-InputWrapper-root select:focus {
+    border-color: #3c8e82 !important;
+    box-shadow: 0 0 0 1px rgba(60, 142, 130, 0.2) !important;
+    outline-color: #3c8e82 !important;
+  }
+  
+  // File input styling (for browsers that support it)
+  input[type='file']::-webkit-file-upload-button,
+  input[type='file']::file-selector-button {
+    background-color: #3c8e82 !important;
+    color: white !important;
+    border-color: #3c8e82 !important;
+    
+    &:hover {
+      background-color: #45a79b !important;
+      border-color: #45a79b !important;
+    }
+  }
+
+  // Buttons: apply light green style similar to table top-level heading
+  .svelteui-Button-root {
+    background-color: #e2f5f2 !important;
+    color: #3c8e82 !important;
+    border-color: #3c8e82 !important;
+  }
+  .svelteui-Button-root:hover {
+    background-color: #d6efe9 !important;
+    border-color: #3c8e82 !important;
+  }
+  .svelteui-Button-root:disabled,
+  .svelteui-Button-root[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}

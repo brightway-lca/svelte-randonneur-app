@@ -7,6 +7,17 @@
     gap: 4px;
     flex-direction: column;
   }
+  // Reduce whitespace in Mapping section
+  &[data-id='context'],
+  &[data-id='context-item'],
+  &[data-id='graph_context'],
+  &[data-id='graph_context-item'] {
+    gap: 2px;
+    .Wrapper,
+    .ItemsWrapper {
+      gap: 4px;
+    }
+  }
   .Wrapper,
   .ItemsWrapper {
     display: flex;
